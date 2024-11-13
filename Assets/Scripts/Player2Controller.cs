@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Profiling;
 using UnityEngine;
 
 public class Player2Controller : MonoBehaviour
@@ -8,10 +7,13 @@ public class Player2Controller : MonoBehaviour
 
     public float speed = 5;
     public float p2HorizontalInput;
-    public float jumpForce = 10;
-    public float gravityModifier;
+    public float jumpForce = 8;
+    public float gravityModifier = 1.3f;
+    private float unstuckInputP2;
+    private float jumpInputP2;
     public bool p2IsOnGround = true;
     private int p2JumpCounter = 2;
+    private Vector3 startPosP2 = new Vector3(4, 0, 0);
     private Rigidbody playerRb2;
     private GameObject p2;
     public GameManager gameManager;
@@ -28,15 +30,22 @@ public class Player2Controller : MonoBehaviour
     void Update()
     {
         p2HorizontalInput = Input.GetAxis("P2Horizontal");
+        jumpInputP2 = Input.GetAxis("JumpP2");
+        unstuckInputP2 = Input.GetAxis("UnstuckP2");
 
         p2.transform.Translate(Vector3.right * p2HorizontalInput * Time.deltaTime * speed);
 
-       
-        if (Input.GetKeyDown(KeyCode.UpArrow) && p2JumpCounter != 0)
+
+        if ((Input.GetKeyDown(KeyCode.Alpha7) && p2JumpCounter != 0) || (Input.GetKeyDown(KeyCode.Alpha4) && p2JumpCounter != 0) || (Input.GetKeyDown(KeyCode.Keypad7) && p2JumpCounter != 0) || (Input.GetKeyDown(KeyCode.Keypad4) && p2JumpCounter != 0))
         {
             playerRb2.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             p2IsOnGround = false;
             p2JumpCounter -= 1;
+        }
+
+        if (unstuckInputP2 >= .8f || Input.GetKeyDown(KeyCode.Keypad8) || Input.GetKeyDown(KeyCode.Keypad5))
+        {
+            transform.position = startPosP2;
         }
     }
 
@@ -49,15 +58,13 @@ public class Player2Controller : MonoBehaviour
             p2JumpCounter = 2;
         }
 
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other == gameObject.CompareTag("Trash"))
+        if (collision.gameObject.CompareTag("Trash"))
         {
-            Destroy(other.gameObject);
+            Destroy(collision.gameObject);
             gameManager.UpdateP2Score(1);
-
         }
+
     }
+
+
 }

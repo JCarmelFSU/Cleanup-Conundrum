@@ -13,6 +13,7 @@ public class DifficultyButtons : MonoBehaviour
     void Start()
     {
         button = GetComponent<Button>();
+      
         button.onClick.AddListener(SetDifficulty);
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
@@ -20,12 +21,24 @@ public class DifficultyButtons : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Z))
+        {
+            gameManager.StartGame(1);
+        }
+        else if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.V))
+        {
+            gameManager.StartGame(2);
+        }
+        else if (Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.B))
+        {
+            gameManager.StartGame(3);
+        }
     }
 
     void SetDifficulty()
     {
         Debug.Log(gameObject.name + " was clicked");
         gameManager.StartGame(difficulty);
+        
     }
 }

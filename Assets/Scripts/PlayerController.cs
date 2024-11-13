@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Profiling;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
 
-    public float speed = 5;
-    public float p1HorizontalInput;
-    public float jumpForce = 10;
-    public float gravityModifier;
+    private float speed = 5;
+    private float p1HorizontalInput;
+    private float unstuckInput;
+    private float jumpInput;
+    public float jumpForce = 8;
+    public float gravityModifier = 1.3f;
     public bool p1IsOnGround = true;
     private int p1JumpCounter = 2;
+    private Vector3 startPos = new Vector3(3, 0, 0);
     private Rigidbody playerRb1;
     private GameObject p1;
     private int p1Score;
@@ -31,39 +33,40 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         p1HorizontalInput = Input.GetAxis("P1Horizontal");
-
+        jumpInput = Input.GetAxis("Jump");
+        unstuckInput = Input.GetAxis("Unstuck");
 
         p1.transform.Translate(Vector3.right * p1HorizontalInput * Time.deltaTime * speed);
 
-        if (Input.GetKeyDown(KeyCode.Space) && p1JumpCounter != 0)
+        if ((Input.GetKeyDown(KeyCode.Space) && p1JumpCounter != 0) || (Input.GetKeyDown(KeyCode.Z) && p1JumpCounter != 0))
         {
             playerRb1.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             p1IsOnGround = false;
             p1JumpCounter -= 1;
+        }
+
+        if(unstuckInput >= .8f)
+        {
+            transform.position = startPos;
         }
    
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-      
+
         if (collision.gameObject.CompareTag("Ground") && gameObject == p1)
         {
             p1IsOnGround = true;
             p1JumpCounter = 2;
         }
 
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other == gameObject.CompareTag("Trash"))
+        if (collision.gameObject.CompareTag("Trash"))
         {
-            Destroy(other.gameObject);
+            Destroy(collision.gameObject);
             gameManager.UpdateP1Score(1);
         }
-        
-        
+
     }
-  
+
 }

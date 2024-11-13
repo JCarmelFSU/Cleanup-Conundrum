@@ -7,8 +7,9 @@ public class Garbage : MonoBehaviour
 
     public Rigidbody garbageRb;
     public BoxCollider garbageCollider;
-    public Transform player, garbageContainer;
+    public Transform player;
     public GameObject player1;
+    public Component[] trashContainers;
 
     public float pickUpRange;
     public float dropForwardForce, dropUpwardForce;
@@ -21,6 +22,7 @@ public class Garbage : MonoBehaviour
         //Startup
 
         player1 = GameObject.Find("Donna");
+        player = player1.transform;
 
     }
 
@@ -77,11 +79,11 @@ public class Garbage : MonoBehaviour
         garbageRb.AddForce(player.forward * dropForwardForce, ForceMode.Impulse);
         garbageRb.AddForce(player.forward * dropUpwardForce, ForceMode.Impulse);
         float random = Random.Range(-1f, 1f);
-        garbageRb.AddTorque(new Vector3(random, random, random));
+        
 
         //Make Rigidbody not kinematic & BoxCollider trigger
 
-        garbageRb.isKinematic = true;
+        garbageRb.isKinematic = false;
         garbageCollider.isTrigger = true;
     }
 }
