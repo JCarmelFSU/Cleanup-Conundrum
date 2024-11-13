@@ -8,17 +8,21 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> garbage;
-    private float spawnRate = 1.0f;
-    private int score;
-    public TextMeshProUGUI scoreText;
+    private float spawnRate = 2.5f;
+    private int p1Score;
+    private int p2Score;
+    public TextMeshProUGUI p1ScoreText;
+    public TextMeshProUGUI p2ScoreText;
     public TextMeshProUGUI gameOverText;
+    public TextMeshProUGUI timerText;
     public bool isGameActive;
     public Button restartButton;
     public GameObject titleScreen;
+    public float timeLeft = 60.0f;
     // Start is called before the first frame update
     void Start()
     {
-        
+       // Cursor.visible = false;
     }
 
     IEnumerator SpawnTarget()
@@ -32,18 +36,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateScore(int scoreToAdd)
+    public void UpdateP1Score(int scoreToAdd)
     {
-        score += scoreToAdd;
-        scoreText.text = "Score " + score;
+        p1Score += scoreToAdd;
+        p1ScoreText.text = "Score " + p1Score;
+    }
+
+    public void UpdateP2Score(int scoreToAdd)
+    {
+        p2Score += scoreToAdd;
+        p2ScoreText.text = "Score " + p2Score;
     }
 
     public void StartGame(int difficulty)
     {
         isGameActive = true;
         StartCoroutine(SpawnTarget());
-        score = 0;
-        UpdateScore(0);
+        p1Score = 0;
+        p2Score = 0;
+        UpdateP1Score(0);
+        UpdateP2Score(0);
         titleScreen.gameObject.SetActive(false);
         spawnRate /= difficulty;
     }
@@ -60,9 +72,24 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    
+
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
+        
+        timeLeft -= Time.deltaTime;
+        timerText.text = "Time: " + timeLeft.ToString("F2");
+        if (timeLeft < 0)
+        {
+            GameOver();
+        }
+
         
     }
 }
